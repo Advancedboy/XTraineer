@@ -20,11 +20,13 @@
 ## 🛠 Стек технологий
 
 ### Фронтенд
+
 - React Native
 - TypeScript
-- Expo 
+- Expo
 
 ### Бэкенд
+
 - Node.js
 - NestJS
 - SQLite (через Prisma ORM)
@@ -32,8 +34,9 @@
 - Swagger для документации API
 
 ### Разное
+
 - Git + GitHub
-- Docker 
+- Docker
 - Postman (для тестирования API)
 
 ---
@@ -41,7 +44,38 @@
 ## ⚡ Установка и запуск проекта
 
 ### 1. Клонируем репозиторий
-```bash
-git clone https://github.com/Advancedboy/XTraineer 
-cd xtrainee 
 
+```bash
+git clone https://github.com/Advancedboy/XTraineer
+cd xtrainee
+```
+
+### 2. Установка зависимостей
+
+Для бэкенда
+
+```bash
+cd XTraineer/backend
+npm install
+```
+
+Для фронтенда
+
+```bash
+cd ../../mobile
+npm install
+```
+
+### 3. Запуск
+
+Бэкенд
+
+```bash
+yarn start dev
+```
+
+Мобильное приложение
+
+```bash
+expo start
+```
