@@ -1,0 +1,73 @@
+datasource db {
+  provider = "sqlite"
+  url = "file:./db/dev.db"
+}
+generator client {
+  provider = "prisma-client-js"
+  output   = "../node_modules/.prisma/client"
+}
+
+
+model User {
+  id          Int       @id @default(autoincrement())
+  email       String    @unique
+  password    String
+  name        String?
+  age         Int?
+  height      Float?
+  weight      Float?
+  gender      String?
+  createdAt   DateTime  @default(now())
+  workouts    WorkoutProgress[]
+  foodEntries FoodDiary[]
+  notifications Notification[]
+}
+
+model TrainingProgram {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String?
+  difficulty  String?
+  workouts    Workout[]
+}
+
+model Workout {
+  id                Int               @id @default(autoincrement())
+  trainingProgramId  Int
+  date              DateTime
+  durationMinutes   Int?
+  type              String?
+  trainingProgram   TrainingProgram   @relation(fields: [trainingProgramId], references: [id])
+  progress          WorkoutProgress[]
+}
+
+model WorkoutProgress {
+  id          Int      @id @default(autoincrement())
+  workoutId   Int
+  userId      Int
+  exercisesDone Int?
+  caloriesBurned Float?
+  workout     Workout  @relation(fields: [workoutId], references: [id])
+  user        User     @relation(fields: [userId], references: [id])
+}
+
+model FoodDiary {
+  id          Int      @id @default(autoincrement())
+  userId      Int
+  date        DateTime
+  foodItem    String
+  quantity    Float
+  calories    Float
+  proteins    Float?
+  fats        Float?
+  carbs       Float?
+  user        User     @relation(fields: [userId], references: [id])
+}
+
+model Notification {
+  id          Int      @id @default(autoincrement())
+  userId      Int
+  type        String
+  notifyTime  DateTime
+  user        User     @relation(fields: [userId], references: [id])
+}
