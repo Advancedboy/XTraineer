@@ -1,73 +1,115 @@
 datasource db {
   provider = "sqlite"
-  url = "file:./db/dev.db"
+  url      = "file:./db/dev.db"
 }
+
 generator client {
   provider = "prisma-client-js"
   output   = "../node_modules/.prisma/client"
 }
 
-
 model User {
-  id          Int       @id @default(autoincrement())
-  email       String    @unique
-  password    String
-  name        String?
-  age         Int?
-  height      Float?
-  weight      Float?
-  gender      String?
-  createdAt   DateTime  @default(now())
-  workouts    WorkoutProgress[]
-  foodEntries FoodDiary[]
-  notifications Notification[]
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  password  String
+  name      String?
+  age       Int?
+  height    Float?
+  weight    Float?
+  gender    String?
+  createdAt DateTime @default(now())
+
+  profile           UserProfile?
+  workoutPlans      WorkoutPlan[]
+  completedWorkouts CompletedWorkout[]
+  recommendations   Recommendation[]
 }
 
-model TrainingProgram {
-  id          Int      @id @default(autoincrement())
+model UserProfile {
+  id     Int  @id @default(autoincrement())
+  userId Int  @unique
+  user   User @relation(fields: [userId], references: [id])
+
+  goals     String?
+  avatarUrl String?
+}
+
+model SportType {
+  id           Int           @id @default(autoincrement())
+  key          String        @unique
+  name         String
+  description  String?
+  workoutPlans WorkoutPlan[]
+}
+
+model WorkoutPlan {
+  id          Int     @id @default(autoincrement())
   title       String
   description String?
-  difficulty  String?
-  workouts    Workout[]
+  isPublic    Boolean @default(false)
+
+  ownerId Int?
+  owner   User? @relation(fields: [ownerId], references: [id])
+
+  sportTypeId       Int
+  sportType         SportType          @relation(fields: [sportTypeId], references: [id])
+  completedWorkouts CompletedWorkout[]
+
+  exercises WorkoutExercise[]
+  createdAt DateTime          @default(now())
 }
 
-model Workout {
-  id                Int               @id @default(autoincrement())
-  trainingProgramId  Int
-  date              DateTime
-  durationMinutes   Int?
-  type              String?
-  trainingProgram   TrainingProgram   @relation(fields: [trainingProgramId], references: [id])
-  progress          WorkoutProgress[]
+model WorkoutExercise {
+  id     Int         @id @default(autoincrement())
+  planId Int
+  plan   WorkoutPlan @relation(fields: [planId], references: [id])
+
+  name              String
+  description       String?
+  order             Int?
+  sets              Int?
+  reps              Int?
+  targetWeightKg    Float?
+  targetDurationSec Int?
 }
 
-model WorkoutProgress {
-  id          Int      @id @default(autoincrement())
-  workoutId   Int
-  userId      Int
-  exercisesDone Int?
-  caloriesBurned Float?
-  workout     Workout  @relation(fields: [workoutId], references: [id])
-  user        User     @relation(fields: [userId], references: [id])
+model CompletedWorkout {
+  id     Int  @id @default(autoincrement())
+  userId Int
+  user   User @relation(fields: [userId], references: [id])
+
+  planId Int?
+  plan   WorkoutPlan? @relation(fields: [planId], references: [id])
+
+  startedAt  DateTime
+  finishedAt DateTime?
+  notes      String?
+
+  results   WorkoutResult[]
+  createdAt DateTime        @default(now())
 }
 
-model FoodDiary {
-  id          Int      @id @default(autoincrement())
-  userId      Int
-  date        DateTime
-  foodItem    String
-  quantity    Float
-  calories    Float
-  proteins    Float?
-  fats        Float?
-  carbs       Float?
-  user        User     @relation(fields: [userId], references: [id])
+model WorkoutResult {
+  id                 Int              @id @default(autoincrement())
+  completedWorkoutId Int
+  completedWorkout   CompletedWorkout @relation(fields: [completedWorkoutId], references: [id])
+
+  exerciseName String
+  setsDone     Int?
+  repsPerSet   Int?
+  weightKg     Float?
+  durationSec  Int?
+  notes        String?
 }
 
-model Notification {
-  id          Int      @id @default(autoincrement())
-  userId      Int
-  type        String
-  notifyTime  DateTime
-  user        User     @relation(fields: [userId], references: [id])
+model Recommendation {
+  id     Int  @id @default(autoincrement())
+  userId Int
+  user   User @relation(fields: [userId], references: [id])
+
+  content    String
+  reason     String?
+  sourceRule String?
+
+  createdAt DateTime @default(now())
 }
