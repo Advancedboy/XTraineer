@@ -1,7 +1,7 @@
 import { Module } from "@nestjs/common";
 import { CompletedWorkoutService } from "./completed-workout.service";
 import { CompletedWorkoutController } from "./completed-workout.controller";
-import { PrismaService } from "src/prisma/prisma.service";
+import { PrismaService } from "../../prisma/prisma.service";
 
 @Module({
   controllers: [CompletedWorkoutController],

@@ -1,22 +1,22 @@
 import {
   Controller,
   Post,
-  Body,
   Get,
-  Param,
   Patch,
   Delete,
+  Body,
+  Param,
 } from "@nestjs/common";
-import { WorkoutPlanService } from "./workout-plan.service";
-import { CreateWorkoutPlanDto } from "./dto/create-workout-plan.dto";
-import { UpdateWorkoutPlanDto } from "./dto/update-workout-plan.dto";
+import { SportTypeService } from "./sport-type.service";
+import { CreateSportTypeDto } from "./dto/create-sport-type.dto";
+import { UpdateSportTypeDto } from "./dto/update-sport-type.dto";
 
-@Controller("workout-plans")
-export class WorkoutPlanController {
-  constructor(private service: WorkoutPlanService) {}
+@Controller("sport-types")
+export class SportTypeController {
+  constructor(private service: SportTypeService) {}
 
   @Post()
-  create(@Body() dto: CreateWorkoutPlanDto) {
+  create(@Body() dto: CreateSportTypeDto) {
     return this.service.create(dto);
   }
 
@@ -31,7 +31,7 @@ export class WorkoutPlanController {
   }
 
   @Patch(":id")
-  update(@Param("id") id: string, @Body() dto: UpdateWorkoutPlanDto) {
+  update(@Param("id") id: string, @Body() dto: UpdateSportTypeDto) {
     return this.service.update(+id, dto);
   }
 

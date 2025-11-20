@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { PrismaService } from "src/prisma/prisma.service";
+import { PrismaService } from "../../prisma/prisma.service";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { UpdateUserDto } from "./dto/update-user.dto";
 import * as bcrypt from "bcrypt";
@@ -19,7 +19,6 @@ export class UserService {
         age: createUserDto.age,
         height: createUserDto.height,
         weight: createUserDto.weight,
-        // если хочешь хранить gender — добавь это поле в schema.prisma:
         gender: createUserDto.gender,
       },
     });

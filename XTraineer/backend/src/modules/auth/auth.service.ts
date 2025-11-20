@@ -15,7 +15,7 @@ export class AuthService {
   constructor(
     private prisma: PrismaService,
     private jwtService: JwtService,
-    private userService: UserService
+    private userService: UserService,
   ) {}
 
   async register(dto: RegisterDto) {
@@ -28,15 +28,12 @@ export class AuthService {
       data: {
         ...dto,
         password: hashedPassword,
+        role: dto.role || "USER", // по умолчанию USER
       },
     });
 
     const token = await this.signToken(user.id, user.email);
-
-    return {
-      user: { ...user, password: undefined },
-      token,
-    };
+    return { user: { ...user, password: undefined }, token };
   }
 
   async login(dto: LoginDto) {

@@ -1,3 +1,5 @@
+// schema.prisma
+
 datasource db {
   provider = "sqlite"
   url      = "file:./db/dev.db"
@@ -8,15 +10,35 @@ generator client {
   output   = "../node_modules/.prisma/client"
 }
 
+// ----------------------
+// ENUMS
+// ----------------------
+enum Role {
+  USER
+  ADMIN
+}
+
+enum SportTypeEnum {
+  GYM
+  MMA
+  ATHLETICS
+  // можно добавлять другие виды спорта
+}
+
+// ----------------------
+// MODELS
+// ----------------------
+
 model User {
   id        Int      @id @default(autoincrement())
   email     String   @unique
   password  String
-  name      String?
+  name      String
   age       Int?
-  height    Float?
-  weight    Float?
+  height    Int?
+  weight    Int?
   gender    String?
+  role      Role     @default(USER)
   createdAt DateTime @default(now())
 
   profile           UserProfile?
@@ -26,19 +48,15 @@ model User {
 }
 
 model UserProfile {
-  id     Int  @id @default(autoincrement())
-  userId Int  @unique
-  user   User @relation(fields: [userId], references: [id])
-
-  goals     String?
-  avatarUrl String?
+  id     Int     @id @default(autoincrement())
+  bio    String?
+  userId Int     @unique
+  user   User    @relation(fields: [userId], references: [id])
 }
 
 model SportType {
   id           Int           @id @default(autoincrement())
-  key          String        @unique
-  name         String
-  description  String?
+  name         SportTypeEnum @unique
   workoutPlans WorkoutPlan[]
 }
 
@@ -48,29 +66,27 @@ model WorkoutPlan {
   description String?
   isPublic    Boolean @default(false)
 
+  sportTypeId Int
+  sportType   SportType @relation(fields: [sportTypeId], references: [id])
+
   ownerId Int?
   owner   User? @relation(fields: [ownerId], references: [id])
 
-  sportTypeId       Int
-  sportType         SportType          @relation(fields: [sportTypeId], references: [id])
-  completedWorkouts CompletedWorkout[]
-
   exercises WorkoutExercise[]
-  createdAt DateTime          @default(now())
+  completed CompletedWorkout[]
 }
 
 model WorkoutExercise {
-  id     Int         @id @default(autoincrement())
-  planId Int
-  plan   WorkoutPlan @relation(fields: [planId], references: [id])
+  id          Int         @id @default(autoincrement())
+  name        String
+  description String?
+  reps        Int?
+  sets        Int?
+  duration    Int? // время в секундах
+  planId      Int
+  plan        WorkoutPlan @relation(fields: [planId], references: [id])
 
-  name              String
-  description       String?
-  order             Int?
-  sets              Int?
-  reps              Int?
-  targetWeightKg    Float?
-  targetDurationSec Int?
+  results WorkoutResult[]
 }
 
 model CompletedWorkout {
@@ -85,8 +101,7 @@ model CompletedWorkout {
   finishedAt DateTime?
   notes      String?
 
-  results   WorkoutResult[]
-  createdAt DateTime        @default(now())
+  results WorkoutResult[]
 }
 
 model WorkoutResult {
@@ -94,12 +109,13 @@ model WorkoutResult {
   completedWorkoutId Int
   completedWorkout   CompletedWorkout @relation(fields: [completedWorkoutId], references: [id])
 
-  exerciseName String
-  setsDone     Int?
-  repsPerSet   Int?
-  weightKg     Float?
-  durationSec  Int?
-  notes        String?
+  exerciseId Int
+  exercise   WorkoutExercise @relation(fields: [exerciseId], references: [id])
+
+  weight   Int?
+  reps     Int?
+  sets     Int?
+  duration Int? // время в секундах
 }
 
 model Recommendation {
@@ -110,6 +126,5 @@ model Recommendation {
   content    String
   reason     String?
   sourceRule String?
-
-  createdAt DateTime @default(now())
+  createdAt  DateTime @default(now())
 }

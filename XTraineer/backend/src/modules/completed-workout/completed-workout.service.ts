@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { PrismaService } from "src/prisma/prisma.service";
+import { PrismaService } from "../../prisma/prisma.service";
 import { CreateCompletedWorkoutDto } from "./dto/create-completed-workout.dto";
 import { UpdateCompletedWorkoutDto } from "./dto/update-completed-workout.dto";
 

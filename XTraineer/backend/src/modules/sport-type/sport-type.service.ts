@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { PrismaService } from "src/prisma/prisma.service";
+import { PrismaService } from "../../prisma/prisma.service";
 import { CreateSportTypeDto } from "./dto/create-sport-type.dto";
 import { UpdateSportTypeDto } from "./dto/update-sport-type.dto";
 

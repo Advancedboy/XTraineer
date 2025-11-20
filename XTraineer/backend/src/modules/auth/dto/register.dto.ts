@@ -5,6 +5,7 @@ import {
   IsOptional,
   IsInt,
 } from "class-validator";
+import { Role } from "@prisma/client";
 
 export class RegisterDto {
   @IsEmail()
@@ -29,4 +30,7 @@ export class RegisterDto {
   @IsOptional()
   @IsString()
   gender?: string;
+
+  @IsOptional()
+  role?: Role; // ADMIN или USER
 }
