@@ -3,7 +3,6 @@ import { TextInput, Text, StyleSheet, Alert } from "react-native";
 import ScreenContainer from "../components/ScreenContainer";
 import Button from "../components/Button";
 import { useAuth } from "../context/AuthContext";
-import { authApi } from "../api/auth";
 
 export default function RegisterScreen({ navigation }: any) {
   const { login } = useAuth();
@@ -12,22 +11,16 @@ export default function RegisterScreen({ navigation }: any) {
   const [password, setPassword] = useState("");
 
   const handleRegister = async () => {
-    if (!email || !password || !name) {
+    if (!name || !email || !password) {
       Alert.alert("Ошибка", "Заполните все поля");
       return;
     }
 
-    try {
-      const data = await authApi.register(email, password, name);
-      login(data.accessToken, data.user);
-      navigation.replace("Home");
-    } catch (err: any) {
-      console.error(err);
-      Alert.alert(
-        "Ошибка",
-        err.response?.data?.message || "Не удалось зарегистрироваться"
-      );
-    }
+    // TODO: вызвать backend через fetch/axios
+    login("dummy-token", { id: 1, name, email });
+
+    // Переход на Home с возможностью вернуться назад
+    navigation.navigate("Home");
   };
 
   return (

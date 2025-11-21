@@ -6,27 +6,14 @@ import WelcomeScreen from "../screens/WelcomeScreen";
 import LoginScreen from "../screens/LoginScreen";
 import RegisterScreen from "../screens/RegisterScreen";
 import HomeScreen from "../screens/HomeScreen";
-import SportSelectionScreen from "../screens/SportSelectionScreen";
-import WorkoutScreen from "../screens/WorkoutScreen";
 import HistoryScreen from "../screens/HistoryScreen";
+import ProfileScreen from "../screens/ProfileScreen";
 import ProgressScreen from "../screens/ProgressScreen";
 import RecommendationScreen from "../screens/RecommendationScreen";
-import ProfileScreen from "../screens/ProfileScreen";
+import WorkoutScreen from "../screens/WorkoutScreen";
+import SportSelectionScreen from "../screens/SportSelectionScreen";
 
-export type RootStackParamList = {
-  Welcome: undefined;
-  Login: undefined;
-  Register: undefined;
-  Home: undefined;
-  SportSelectionScreen: undefined;
-  WorkoutScreen: undefined;
-  HistoryScreen: undefined;
-  ProgressScreen: undefined;
-  RecommendationScreen: undefined;
-  ProfileScreen: undefined;
-};
-
-const Stack = createNativeStackNavigator<RootStackParamList>();
+const Stack = createNativeStackNavigator();
 
 export default function AppNavigator() {
   return (
@@ -39,18 +26,12 @@ export default function AppNavigator() {
         <Stack.Screen name="Login" component={LoginScreen} />
         <Stack.Screen name="Register" component={RegisterScreen} />
         <Stack.Screen name="Home" component={HomeScreen} />
-        <Stack.Screen
-          name="SportSelectionScreen"
-          component={SportSelectionScreen}
-        />
-        <Stack.Screen name="WorkoutScreen" component={WorkoutScreen} />
-        <Stack.Screen name="HistoryScreen" component={HistoryScreen} />
-        <Stack.Screen name="ProgressScreen" component={ProgressScreen} />
-        <Stack.Screen
-          name="RecommendationScreen"
-          component={RecommendationScreen}
-        />
-        <Stack.Screen name="ProfileScreen" component={ProfileScreen} />
+        <Stack.Screen name="History" component={HistoryScreen} />
+        <Stack.Screen name="Profile" component={ProfileScreen} />
+        <Stack.Screen name="Progress" component={ProgressScreen} />
+        <Stack.Screen name="Recommendation" component={RecommendationScreen} />
+        <Stack.Screen name="Workout" component={WorkoutScreen} />
+        <Stack.Screen name="SportSelection" component={SportSelectionScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

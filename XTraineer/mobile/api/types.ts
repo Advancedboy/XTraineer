@@ -35,3 +35,31 @@ export interface HistoryItem {
   date: string;
   notes?: string;
 }
+
+export interface CompletedWorkoutResultInput {
+  exerciseId: number;
+  setsDone?: number;
+  repsPerSet?: number;
+  weightKg?: number;
+  durationSec?: number;
+  notes?: string;
+}
+
+export interface CompletedWorkoutInput {
+  userId: number;
+  planId?: number;
+  startedAt: string;
+  finishedAt?: string;
+  notes?: string;
+  results?: CompletedWorkoutResultInput[];
+}
+
+export interface WorkoutResultInput {
+  exerciseId: number;
+  completedWorkoutId?: number;
+  setsDone?: number;
+  repsPerSet?: number;
+  weightKg?: number;
+  durationSec?: number;
+  notes?: string;
+}

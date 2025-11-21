@@ -1,43 +1,36 @@
-import React, { useState } from "react";
-import { Alert, StyleSheet, Text } from "react-native";
-import ScreenContainer from "../components/ScreenContainer";
+import React, { useEffect, useState } from "react";
+import { ScrollView, View, Text } from "react-native";
 import WorkoutForm from "../components/WorkoutForm";
-import { useAuth } from "../context/AuthContext";
 import { workoutApi } from "../api/workout";
 
 export default function WorkoutScreen() {
-  const { token } = useAuth();
-  const [loading, setLoading] = useState(false);
+  const [workouts, setWorkouts] = useState<any[]>([]);
 
-  const handleSubmit = async (formData: any) => {
-    if (!token) return;
-    setLoading(true);
-    try {
-      await workoutApi.create(token, formData);
-      Alert.alert("Успешно", "Тренировка сохранена");
-    } catch (err: any) {
-      console.error(err);
-      Alert.alert(
-        "Ошибка",
-        err.response?.data?.message || "Не удалось сохранить тренировку"
-      );
-    } finally {
-      setLoading(false);
-    }
+  const fetchWorkouts = async () => {
+    const data = await workoutApi.getWorkouts();
+    setWorkouts(data);
   };
 
+  useEffect(() => {
+    fetchWorkouts();
+  }, []);
+
   return (
-    <ScreenContainer>
-      <Text style={styles.title}>Новая тренировка</Text>
-      <WorkoutForm onSubmit={handleSubmit} loading={loading} />
-    </ScreenContainer>
+    <ScrollView>
+      <WorkoutForm onCreated={fetchWorkouts} />
+      <Text style={{ fontSize: 20, marginTop: 16, marginLeft: 16 }}>
+        История тренировок:
+      </Text>
+      {workouts.map((w) => (
+        <View
+          key={w.id}
+          style={{ padding: 16, borderBottomWidth: 1, borderColor: "#eee" }}
+        >
+          <Text>Тренировка #{w.id}</Text>
+          <Text>Заметки: {w.notes}</Text>
+          <Text>Результаты: {w.results.length} упражнений</Text>
+        </View>
+      ))}
+    </ScrollView>
   );
 }
-
-const styles = StyleSheet.create({
-  title: {
-    fontSize: 24,
-    fontWeight: "700",
-    marginBottom: 16,
-  },
-});
