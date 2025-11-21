@@ -3,6 +3,7 @@ import { TextInput, Text, StyleSheet, Alert } from "react-native";
 import ScreenContainer from "../components/ScreenContainer";
 import Button from "../components/Button";
 import { useAuth } from "../context/AuthContext";
+import { authApi } from "../api/auth";
 
 export default function LoginScreen({ navigation }: any) {
   const { login } = useAuth();
@@ -10,15 +11,19 @@ export default function LoginScreen({ navigation }: any) {
   const [password, setPassword] = useState("");
 
   const handleLogin = async () => {
-    // TODO: заменить на fetch/axios к backend
     if (!email || !password) {
       Alert.alert("Ошибка", "Введите email и пароль");
       return;
     }
 
-    // Заглушка: допустим, login успешен
-    login("dummy-token", { id: 1, email, name: "Пользователь" });
-    navigation.replace("Home"); // переходим на главный экран
+    try {
+      const data = await authApi.login(email, password);
+      login(data.accessToken, data.user);
+      navigation.replace("Home");
+    } catch (err: any) {
+      console.error(err);
+      Alert.alert("Ошибка", err.response?.data?.message || "Не удалось войти");
+    }
   };
 
   return (

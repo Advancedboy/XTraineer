@@ -1,28 +1,42 @@
-import React, { useState } from "react";
-import { Text, FlatList, StyleSheet } from "react-native";
+import React, { useEffect, useState } from "react";
+import { FlatList, Text, StyleSheet } from "react-native";
 import ScreenContainer from "../components/ScreenContainer";
-import { HistoryItem } from "../api/types";
-
-const dummyHistory: HistoryItem[] = [
-  { id: 1, workoutId: 1, date: "2025-11-20", notes: "Лёгкая тренировка" },
-  { id: 2, workoutId: 2, date: "2025-11-21", notes: "Силовая тренировка" },
-];
+import Card from "../components/Card";
+import { useAuth } from "../context/AuthContext";
+import { historyApi } from "../api/history";
 
 export default function HistoryScreen() {
-  const [history, setHistory] = useState<HistoryItem[]>(dummyHistory);
+  const { token } = useAuth();
+  const [history, setHistory] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!token) return;
+    setLoading(true);
+    historyApi
+      .getAll(token)
+      .then((data) => setHistory(data))
+      .finally(() => setLoading(false));
+  }, [token]);
 
   return (
     <ScreenContainer>
       <Text style={styles.title}>История тренировок</Text>
-      <FlatList
-        data={history}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => (
-          <Text style={styles.item}>
-            {item.date}: {item.notes}
-          </Text>
-        )}
-      />
+      {loading ? (
+        <Text>Загрузка...</Text>
+      ) : (
+        <FlatList
+          data={history}
+          keyExtractor={(item) => item.id.toString()}
+          renderItem={({ item }) => (
+            <Card>
+              <Text>Дата: {new Date(item.startedAt).toLocaleDateString()}</Text>
+              <Text>План: {item.plan?.name || "Без плана"}</Text>
+              <Text>Заметки: {item.notes || "Нет"}</Text>
+            </Card>
+          )}
+        />
+      )}
     </ScreenContainer>
   );
 }
@@ -30,16 +44,7 @@ export default function HistoryScreen() {
 const styles = StyleSheet.create({
   title: {
     fontSize: 24,
-    fontWeight: "600",
-    marginBottom: 20,
-    textAlign: "center",
-  },
-  item: {
-    backgroundColor: "#fff",
-    padding: 16,
-    borderRadius: 8,
-    marginBottom: 12,
-    borderWidth: 1,
-    borderColor: "#ddd",
+    fontWeight: "700",
+    marginBottom: 16,
   },
 });

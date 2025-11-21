@@ -1,21 +1,45 @@
-import React, { useState } from "react";
-import { Text, StyleSheet } from "react-native";
+import React, { useEffect, useState } from "react";
+import { FlatList, Text, StyleSheet } from "react-native";
 import ScreenContainer from "../components/ScreenContainer";
+import Card from "../components/Card";
+import { useAuth } from "../context/AuthContext";
+import { progressApi } from "../api/progress";
 
 export default function ProgressScreen() {
-  const [progress, setProgress] = useState([
-    { week: 1, workouts: 3 },
-    { week: 2, workouts: 4 },
-  ]);
+  const { token } = useAuth();
+  const [progress, setProgress] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!token) return;
+    setLoading(true);
+    progressApi
+      .getAll(token)
+      .then((data) => setProgress(data))
+      .finally(() => setLoading(false));
+  }, [token]);
 
   return (
     <ScreenContainer>
       <Text style={styles.title}>Прогресс</Text>
-      {progress.map((p) => (
-        <Text key={p.week} style={styles.item}>
-          Неделя {p.week}: {p.workouts} тренировок
-        </Text>
-      ))}
+      {loading ? (
+        <Text>Загрузка...</Text>
+      ) : (
+        <FlatList
+          data={progress}
+          keyExtractor={(item) => item.id.toString()}
+          renderItem={({ item }) => (
+            <Card>
+              <Text>Упражнение: {item.exercise.name}</Text>
+              <Text>Повторения: {item.reps || 0}</Text>
+              <Text>Сеты: {item.sets || 0}</Text>
+              <Text>Вес: {item.weight || 0} кг</Text>
+              <Text>Время: {item.duration || 0} сек</Text>
+              <Text>Заметки: {item.notesText || "Нет"}</Text>
+            </Card>
+          )}
+        />
+      )}
     </ScreenContainer>
   );
 }
@@ -23,16 +47,7 @@ export default function ProgressScreen() {
 const styles = StyleSheet.create({
   title: {
     fontSize: 24,
-    fontWeight: "600",
-    marginBottom: 20,
-    textAlign: "center",
-  },
-  item: {
-    backgroundColor: "#fff",
-    padding: 16,
-    borderRadius: 8,
-    marginBottom: 12,
-    borderWidth: 1,
-    borderColor: "#ddd",
+    fontWeight: "700",
+    marginBottom: 16,
   },
 });
