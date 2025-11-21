@@ -6,26 +6,21 @@ import {
   Param,
   Patch,
   Delete,
+  UseGuards,
 } from "@nestjs/common";
+import { JwtAuthGuard } from "../../modules/auth/jwt.guard";
 import { WorkoutResultService } from "./workout-result.service";
 import { CreateWorkoutResultDto } from "./dto/create-workout-result.dto";
 import { UpdateWorkoutResultDto } from "./dto/update-workout-result.dto";
 
 @Controller("workout-results")
+@UseGuards(JwtAuthGuard)
 export class WorkoutResultController {
   constructor(private service: WorkoutResultService) {}
 
   @Post()
   create(@Body() dto: CreateWorkoutResultDto) {
-    return this.service.createStandalone(dto);
-  }
-
-  @Post(":completedWorkoutId")
-  createForCompleted(
-    @Param("completedWorkoutId") completedWorkoutId: string,
-    @Body() dto: CreateWorkoutResultDto
-  ) {
-    return this.service.create(+completedWorkoutId, dto);
+    return this.service.create(dto);
   }
 
   @Get()

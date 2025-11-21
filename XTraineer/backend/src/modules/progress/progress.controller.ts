@@ -10,8 +10,8 @@ import {
   Req,
 } from "@nestjs/common";
 import { ProgressService } from "./progress.service";
-import { CreateWorkoutResultDto } from "./dto/create-workout-result.dto";
-import { UpdateWorkoutResultDto } from "./dto/update-workout-result.dto";
+import { CreateWorkoutProgressDto } from "./dto/create-workout-progress.dto";
+import { UpdateWorkoutProgressDto } from "./dto/update-workout-progress.dto";
 import { JwtAuthGuard } from "../../modules/auth/jwt.guard";
 
 @Controller("progress")
@@ -20,7 +20,7 @@ export class ProgressController {
   constructor(private service: ProgressService) {}
 
   @Post()
-  create(@Body() dto: CreateWorkoutResultDto) {
+  create(@Body() dto: CreateWorkoutProgressDto) {
     return this.service.create(dto);
   }
 
@@ -35,7 +35,7 @@ export class ProgressController {
   }
 
   @Patch(":id")
-  update(@Param("id") id: string, @Body() dto: UpdateWorkoutResultDto) {
+  update(@Param("id") id: string, @Body() dto: UpdateWorkoutProgressDto) {
     return this.service.update(+id, dto);
   }
 

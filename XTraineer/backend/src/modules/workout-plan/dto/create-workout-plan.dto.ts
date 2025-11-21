@@ -12,6 +12,8 @@ export class CreateWorkoutPlanDto {
   @IsBoolean()
   isPublic?: boolean;
 
+  ownerId?: number;
+
   @IsInt()
   sportTypeId: number;
 }

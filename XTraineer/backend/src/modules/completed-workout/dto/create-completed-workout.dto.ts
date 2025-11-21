@@ -1,11 +1,44 @@
-import { IsInt, IsOptional, IsString, IsDateString } from "class-validator";
+import {
+  IsNumber,
+  IsOptional,
+  IsString,
+  IsDateString,
+  ValidateNested,
+  IsArray,
+} from "class-validator";
+import { Type } from "class-transformer";
+
+class CompletedWorkoutResultInput {
+  @IsNumber()
+  exerciseId: number;
+
+  @IsOptional()
+  @IsNumber()
+  setsDone?: number;
+
+  @IsOptional()
+  @IsNumber()
+  repsPerSet?: number;
+
+  @IsOptional()
+  @IsNumber()
+  weightKg?: number;
+
+  @IsOptional()
+  @IsNumber()
+  durationSec?: number;
+
+  @IsOptional()
+  @IsString()
+  notes?: string;
+}
 
 export class CreateCompletedWorkoutDto {
-  @IsInt()
+  @IsNumber()
   userId: number;
 
   @IsOptional()
-  @IsInt()
+  @IsNumber()
   planId?: number;
 
   @IsDateString()
@@ -18,4 +51,10 @@ export class CreateCompletedWorkoutDto {
   @IsOptional()
   @IsString()
   notes?: string;
+
+  @IsOptional()
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => CompletedWorkoutResultInput)
+  results?: CompletedWorkoutResultInput[];
 }

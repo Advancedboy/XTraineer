@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, NotFoundException } from "@nestjs/common";
 import { PrismaService } from "../../prisma/prisma.service";
 import { CreateCompletedWorkoutDto } from "./dto/create-completed-workout.dto";
 import { UpdateCompletedWorkoutDto } from "./dto/update-completed-workout.dto";
@@ -7,45 +7,95 @@ import { UpdateCompletedWorkoutDto } from "./dto/update-completed-workout.dto";
 export class CompletedWorkoutService {
   constructor(private prisma: PrismaService) {}
 
-  create(dto: CreateCompletedWorkoutDto) {
-    const { results, ...rest } = dto;
+  // -----------------------------
+  // CREATE
+  // -----------------------------
+  async create(userId: number, dto: CreateCompletedWorkoutDto) {
     return this.prisma.completedWorkout.create({
       data: {
-        ...rest,
-        startedAt: new Date(rest.startedAt),
-        finishedAt: rest.finishedAt ? new Date(rest.finishedAt) : undefined,
-        results: results && results.length ? { create: results } : undefined,
+        user: { connect: { id: userId } },
+        plan: dto.planId ? { connect: { id: dto.planId } } : undefined,
+        startedAt: new Date(dto.startedAt),
+        finishedAt: dto.finishedAt ? new Date(dto.finishedAt) : null,
+        notes: dto.notes ?? null,
+        results: dto.results?.length
+          ? {
+              create: dto.results.map((r) => ({
+                exercise: { connect: { id: r.exerciseId } },
+                setsDone: r.setsDone ?? null,
+                repsPerSet: r.repsPerSet ?? null,
+                weightKg: r.weightKg ?? null,
+                durationSec: r.durationSec ?? null,
+                notes: r.notes ?? null,
+              })),
+            }
+          : undefined,
       },
-      include: { results: true },
+      include: { results: true, plan: true },
     });
   }
 
-  findAll() {
+  // -----------------------------
+  // GET ALL workouts for a user
+  // -----------------------------
+  async findAll(userId: number) {
     return this.prisma.completedWorkout.findMany({
-      include: { results: true, user: true, plan: true },
+      where: { userId },
+      include: { results: true, plan: true },
     });
   }
 
-  findOne(id: number) {
-    return this.prisma.completedWorkout.findUnique({
-      where: { id },
-      include: { results: true, user: true, plan: true },
+  // -----------------------------
+  // GET one workout of a user
+  // -----------------------------
+  async findOne(id: number, userId: number) {
+    const workout = await this.prisma.completedWorkout.findFirst({
+      where: { id, userId },
+      include: { results: true, plan: true },
     });
+    if (!workout) throw new NotFoundException("Completed workout not found");
+    return workout;
   }
 
-  update(id: number, dto: UpdateCompletedWorkoutDto) {
-    const data: any = { ...dto };
-    if (data.startedAt) data.startedAt = new Date(data.startedAt);
-    if (data.finishedAt) data.finishedAt = new Date(data.finishedAt);
-    // note: updating nested results is out of scope here (could be handled by WorkoutResult endpoints)
+  // -----------------------------
+  // UPDATE (no updating results here)
+  // -----------------------------
+  async update(id: number, userId: number, dto: UpdateCompletedWorkoutDto) {
+    const existing = await this.prisma.completedWorkout.findFirst({
+      where: { id, userId },
+    });
+    if (!existing) throw new NotFoundException("Completed workout not found");
+
+    const data: any = {};
+    if (dto.startedAt !== undefined) data.startedAt = new Date(dto.startedAt);
+    if (dto.finishedAt !== undefined)
+      data.finishedAt = dto.finishedAt ? new Date(dto.finishedAt) : null;
+    if (dto.notes !== undefined) data.notes = dto.notes;
+
+    if (dto.planId !== undefined) {
+      data.plan = dto.planId
+        ? { connect: { id: dto.planId } }
+        : { disconnect: true };
+    }
+
     return this.prisma.completedWorkout.update({
       where: { id },
       data,
-      include: { results: true },
+      include: { results: true, plan: true },
     });
   }
 
-  remove(id: number) {
-    return this.prisma.completedWorkout.delete({ where: { id } });
+  // -----------------------------
+  // DELETE
+  // -----------------------------
+  async remove(id: number, userId: number) {
+    const existing = await this.prisma.completedWorkout.findFirst({
+      where: { id, userId },
+    });
+    if (!existing) throw new NotFoundException("Workout not found");
+
+    return this.prisma.completedWorkout.delete({
+      where: { id },
+    });
   }
 }

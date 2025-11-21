@@ -20,6 +20,8 @@ export class CreateWorkoutExerciseDto {
   @IsInt()
   reps?: number;
 
+  planId: number;
+
   @IsOptional()
   @IsNumber()
   targetWeightKg?: number;

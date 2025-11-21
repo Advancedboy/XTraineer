@@ -1,10 +1,13 @@
 import { IsNumber, IsOptional, IsString } from "class-validator";
-export class CreateWorkoutResultDto {
-  @IsNumber()
-  exerciseId: number;
 
+export class UpdateWorkoutProgressDto {
+  @IsOptional()
   @IsNumber()
-  completedWorkoutId: number;
+  exerciseId?: number;
+
+  @IsOptional()
+  @IsNumber()
+  completedWorkoutId?: number;
 
   @IsOptional()
   @IsNumber()

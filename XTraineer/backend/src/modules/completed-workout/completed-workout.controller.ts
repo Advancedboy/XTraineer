@@ -1,42 +1,49 @@
 import {
   Controller,
-  Post,
-  Body,
   Get,
-  Param,
+  Post,
   Patch,
   Delete,
+  Body,
+  Param,
+  UseGuards,
+  Req,
 } from "@nestjs/common";
+import { JwtAuthGuard } from "../auth/jwt.guard";
 import { CompletedWorkoutService } from "./completed-workout.service";
 import { CreateCompletedWorkoutDto } from "./dto/create-completed-workout.dto";
 import { UpdateCompletedWorkoutDto } from "./dto/update-completed-workout.dto";
 
-@Controller("completed-workouts")
+@Controller("completed-workout")
+@UseGuards(JwtAuthGuard)
 export class CompletedWorkoutController {
   constructor(private service: CompletedWorkoutService) {}
 
   @Post()
-  create(@Body() dto: CreateCompletedWorkoutDto) {
-    return this.service.create(dto);
+  create(@Req() req, @Body() dto: CreateCompletedWorkoutDto) {
+    return this.service.create(req.user.id, dto);
   }
-
   @Get()
-  findAll() {
-    return this.service.findAll();
+  findAll(@Req() req) {
+    return this.service.findAll(req.user.id);
   }
 
   @Get(":id")
-  findOne(@Param("id") id: string) {
-    return this.service.findOne(+id);
+  findOne(@Req() req, @Param("id") id: string) {
+    return this.service.findOne(+id, req.user.id);
   }
 
   @Patch(":id")
-  update(@Param("id") id: string, @Body() dto: UpdateCompletedWorkoutDto) {
-    return this.service.update(+id, dto);
+  update(
+    @Req() req,
+    @Param("id") id: string,
+    @Body() dto: UpdateCompletedWorkoutDto
+  ) {
+    return this.service.update(+id, req.user.id, dto);
   }
 
   @Delete(":id")
-  remove(@Param("id") id: string) {
-    return this.service.remove(+id);
+  remove(@Req() req, @Param("id") id: string) {
+    return this.service.remove(+id, req.user.id);
   }
 }

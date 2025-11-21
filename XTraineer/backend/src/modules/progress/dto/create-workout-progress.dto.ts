@@ -1,5 +1,6 @@
 import { IsNumber, IsOptional, IsString } from "class-validator";
-export class CreateWorkoutResultDto {
+
+export class CreateWorkoutProgressDto {
   @IsNumber()
   exerciseId: number;
 

@@ -21,17 +21,13 @@ export class HistoryController {
 
   @Post()
   create(@Req() req, @Body() dto: CreateCompletedWorkoutDto) {
-    return this.service.create(req.user.id, dto);
+    dto.userId = req.user.id;
+    return this.service.create(dto);
   }
 
   @Get()
   findAll(@Req() req) {
     return this.service.findAll(req.user.id);
-  }
-
-  @Get(":id")
-  findOne(@Req() req, @Param("id") id: string) {
-    return this.service.findOne(req.user.id, +id);
   }
 
   @Patch(":id")
@@ -44,7 +40,5 @@ export class HistoryController {
   }
 
   @Delete(":id")
-  remove(@Req() req, @Param("id") id: string) {
-    return this.service.remove(req.user.id, +id);
-  }
+  remove(@Req() req, @Param("id") id: string) {}
 }
