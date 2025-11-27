@@ -32,5 +32,5 @@ export class RegisterDto {
   gender?: string;
 
   @IsOptional()
-  role?: Role; // ADMIN или USER
+  role?: Role;
 }
